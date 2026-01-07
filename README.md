@@ -2,10 +2,19 @@
 
 Plateforme de recensement de créatures mythologiques avec système de témoignages et validation par des experts.
 
-## Architecture
+## Architecture Microservices
 
-- **auth-service**: Service d'authentification (Express + Prisma + SQLite)
-- **lore-service**: Service de gestion du bestiaire et témoignages (Express + Mongoose + MongoDB)
+### Services Principaux
+
+- **auth-service** (Port 3001): Service d'authentification (Express + Prisma + SQLite)
+  - Gestion des utilisateurs et rôles
+  - Authentification JWT
+  - Système de réputation
+
+- **lore-service** (Port 3002): Service de gestion du bestiaire et témoignages (Express + Mongoose + MongoDB)
+  - CRUD créatures mythologiques
+  - Soumission et validation de témoignages
+  - Calcul du legendScore
 
 ## Installation
 
