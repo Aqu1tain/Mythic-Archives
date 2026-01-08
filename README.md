@@ -1,50 +1,46 @@
+![Static Badge](https://img.shields.io/badge/Sup_de-Vinci)
+
 # Mythic Archives
 
-Plateforme de recensement de créatures mythologiques avec système de témoignages et validation par des experts.
-
-## Architecture Microservices
-
-### Services Principaux
-
-- **auth-service** (Port 3001): Service d'authentification (Express + Prisma + SQLite)
-  - Gestion des utilisateurs et rôles
-  - Authentification JWT
-  - Système de réputation
-
-- **lore-service** (Port 3002): Service de gestion du bestiaire et témoignages (Express + Mongoose + MongoDB)
-  - CRUD créatures mythologiques
-  - Soumission et validation de témoignages
-  - Calcul du legendScore
+Mythic archives is a school project, in the context of a Backend course
 
 ## Installation
 
-### Auth Service
+Warning : atm, we are still working on the code, so make sure to checkout on dev branch
+```bash
+git clone https://github.com/Aqu1tain/Mythic-Archives
+cd Mythic-Archives
+# Temporary, whilst the project is not released
+git checkout dev
+git pull origin
+```
 
+Then, launch each microservice separately
 ```bash
 cd auth-service
-npm install
-cp .env.example .env
-npx prisma migrate dev
 npm run dev
 ```
 
-Le service démarre sur le port 3001.
-
-### Test
-
-Vérifiez que le service fonctionne:
-
+Same for lore-service
 ```bash
-curl http://localhost:3001/health
+cd lore-service
+npm run dev
 ```
 
-## Stack Technique
+Check for the both of them on these endpoints (use postman or curl) :
 
-- Node.js + Express.js
-- Prisma (SQL) + Mongoose (MongoDB)
-- JWT pour l'authentification
-- Rôles: USER, EXPERT, ADMIN
+```http request
+GET "http:localhost:3001/health"
+```
+you should get a HTTP 200 code with a message like this :
 
-## Documentation
+```json
+{
+"status": "OK",
+"service": "auth-service"
+}
+```
 
-À venir: Swagger/OpenAPI
+and done ! 
+
+In each microservice, there will be a Doc, to explain which endpoints are accessible more precisely.
