@@ -1,8 +1,10 @@
-node_modules/
+node_modules
 .env
+/generated/prisma
 dev.db
 dev.db-journal
 *.log
-.DS_Store
 
-/generated/prisma
+.idea
+.vscode
+.DS_Store
