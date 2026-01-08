@@ -2,6 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const connectDB = require('./src/config/database');
+const creatureRoutes = require('./src/routes/creatureRoutes');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -19,6 +20,8 @@ app.get('/health', (req, res) => {
     timestamp: new Date().toISOString()
   });
 });
+
+app.use('/creatures', creatureRoutes);
 
 app.use((err, req, res, next) => {
   console.error(err.stack);
