@@ -3,8 +3,7 @@ const mongoose = require('mongoose');
 const creatureSchema = new mongoose.Schema({
   authorId: {
     type: String,
-    required: [true, 'Author ID is required'],
-    index: true
+    required: [true, 'Author ID is required']
   },
   name: {
     type: String,
@@ -29,7 +28,6 @@ const creatureSchema = new mongoose.Schema({
   versionKey: false
 });
 
-creatureSchema.index({ name: 1 });
 creatureSchema.index({ authorId: 1 });
 
 const Creature = mongoose.model('Creature', creatureSchema);

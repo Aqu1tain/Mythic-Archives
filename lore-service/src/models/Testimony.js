@@ -4,13 +4,11 @@ const testimonySchema = new mongoose.Schema({
   creatureId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Creature',
-    required: [true, 'Creature ID is required'],
-    index: true
+    required: [true, 'Creature ID is required']
   },
   authorId: {
     type: String,
-    required: [true, 'Author ID is required'],
-    index: true
+    required: [true, 'Author ID is required']
   },
   description: {
     type: String,
@@ -25,13 +23,11 @@ const testimonySchema = new mongoose.Schema({
       values: ['PENDING', 'VALIDATED', 'REJECTED'],
       message: 'Status must be PENDING, VALIDATED, or REJECTED'
     },
-    default: 'PENDING',
-    index: true
+    default: 'PENDING'
   },
   validatedBy: {
     type: String,
-    default: null,
-    index: true
+    default: null
   },
   validatedAt: {
     type: Date,
@@ -40,8 +36,7 @@ const testimonySchema = new mongoose.Schema({
   createdAt: {
     type: Date,
     default: Date.now,
-    immutable: true,
-    index: true
+    immutable: true
   }
 }, {
   timestamps: false,
