@@ -1,17 +1,10 @@
 {
   "compilerOptions": {
-    "target": "ES2022",
-    "module": "ES2022",
+    "module": "ESNext",
     "moduleResolution": "node",
-    "esModuleInterop": true,
+    "target": "ES2023",
     "strict": true,
-    "skipLibCheck": true,
-    "outDir": "./dist",
-    "rootDir": "./src",
-    "resolveJsonModule": true,
-    "allowSyntheticDefaultImports": true,
-    "forceConsistentCasingInFileNames": true
-  },
-  "include": ["src/**/*"],
-  "exclude": ["node_modules"]
+    "esModuleInterop": true,
+    "skipLibCheck": true
+  }
 }

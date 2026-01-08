@@ -20,3 +20,13 @@ export const login = async (req: Request, res: Response) => {
     res.status(401).json({ error: (error as Error).message });
   }
 };
+
+export const me = async (req: Request, res: Response) => {
+  try {
+    const userId = (req as any).userId;
+    const user = await authService.getUserById(userId);
+    res.json(user);
+  } catch (error) {
+    res.status(404).json({ error: (error as Error).message });
+  }
+};

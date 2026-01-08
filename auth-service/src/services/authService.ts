@@ -71,3 +71,19 @@ export const login = async (email: string, password: string) => {
     token,
   };
 };
+
+export const getUserById = async (userId: number) => {
+  const user = await userRepository.findById(userId);
+  if (!user) {
+    throw new Error('User not found');
+  }
+
+  return {
+    id: user.id,
+    email: user.email,
+    username: user.username,
+    role: user.role,
+    reputation: user.reputation,
+    createdAt: user.createdAt,
+  };
+};
