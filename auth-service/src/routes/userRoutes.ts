@@ -7,5 +7,6 @@ const router = express.Router();
 
 router.get('/admin/users', authenticate, authorize('ADMIN'), userController.getAllUsers);
 router.patch('/users/:id/role', authenticate, authorize('ADMIN'), userController.updateUserRole);
+router.post('/users/:id/reputation', userController.updateReputation);
 
 export default router;

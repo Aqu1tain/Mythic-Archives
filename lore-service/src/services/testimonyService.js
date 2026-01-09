@@ -1,5 +1,6 @@
 const testimonyRepository = require('../repositories/testimonyRepository');
 const mongoose = require('mongoose');
+const axios = require('axios');
 const {
   ValidationError,
   NotFoundError,
@@ -13,7 +14,16 @@ const {
   PAGINATION
 } = require('../constants');
 
+const AUTH_SERVICE_URL = process.env.AUTH_SERVICE_URL || 'http://localhost:3001';
+
 class TestimonyService {
+  async updateReputation(userId, points) {
+    try {
+      await axios.post(`${AUTH_SERVICE_URL}/users/${userId}/reputation`, { points });
+    } catch (error) {
+      console.error(`Failed to update reputation for user ${userId}:`, error.message);
+    }
+  }
   async createTestimony(authorId, testimonyData) {
     const { creatureId, description } = testimonyData;
 
@@ -70,7 +80,7 @@ class TestimonyService {
     return testimony;
   }
 
-  async validateTestimony(testimonyId, validatorId) {
+  async validateTestimony(testimonyId, validatorId, validatorRole) {
     if (!mongoose.Types.ObjectId.isValid(testimonyId)) {
       throw new ValidationError(ERROR_MESSAGES.INVALID_TESTIMONY_ID);
     }
@@ -93,6 +103,10 @@ class TestimonyService {
       validatedBy: validatorId,
       validatedAt: new Date()
     });
+
+    const basePoints = 3;
+    const expertBonus = validatorRole === 'EXPERT' ? 1 : 0;
+    await this.updateReputation(testimony.authorId, basePoints + expertBonus);
 
     return updatedTestimony;
   }
@@ -120,6 +134,8 @@ class TestimonyService {
       validatedBy: rejecterId,
       validatedAt: new Date()
     });
+
+    await this.updateReputation(testimony.authorId, -1);
 
     return updatedTestimony;
   }

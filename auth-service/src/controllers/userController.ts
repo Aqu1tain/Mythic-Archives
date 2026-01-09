@@ -20,3 +20,14 @@ export const updateUserRole = async (req: Request, res: Response) => {
     res.status(400).json({ error: (error as Error).message });
   }
 };
+
+export const updateReputation = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const { points } = req.body;
+    const user = await userService.updateReputation(parseInt(id), points);
+    res.json(user);
+  } catch (error) {
+    res.status(400).json({ error: (error as Error).message });
+  }
+};

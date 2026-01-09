@@ -69,6 +69,7 @@ class TestimonyController {
     try {
       const { id } = req.params;
       const validatorId = req.user?.id || req.body.validatorId;
+      const validatorRole = req.user?.role || 'USER';
 
       if (!validatorId) {
         return res.status(401).json({
@@ -79,7 +80,7 @@ class TestimonyController {
         });
       }
 
-      const testimony = await testimonyService.validateTestimony(id, validatorId);
+      const testimony = await testimonyService.validateTestimony(id, validatorId, validatorRole);
 
       res.status(200).json({
         message: 'Testimony validated successfully',
