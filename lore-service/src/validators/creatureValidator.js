@@ -2,10 +2,6 @@ const Joi = require('joi');
 const { VALIDATION } = require('../constants');
 
 const createCreatureSchema = Joi.object({
-  authorId: Joi.string().required().messages({
-    'string.empty': 'authorId cannot be empty',
-    'any.required': 'authorId is required'
-  }),
   name: Joi.string()
     .min(VALIDATION.CREATURE_NAME_MIN)
     .max(VALIDATION.CREATURE_NAME_MAX)
@@ -25,7 +21,6 @@ const createCreatureSchema = Joi.object({
 });
 
 const updateCreatureSchema = Joi.object({
-  authorId: Joi.string().optional(),
   name: Joi.string()
     .min(VALIDATION.CREATURE_NAME_MIN)
     .max(VALIDATION.CREATURE_NAME_MAX)
