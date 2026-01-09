@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const testimonyController = require('../controllers/testimonyController');
+const { authenticate } = require('../middlewares/auth');
 const validate = require('../middlewares/validate');
 const {
   createTestimonySchema,
@@ -12,6 +13,7 @@ const { testimonyCreationLimiter, validationLimiter } = require('../middlewares/
 
 router.post(
   '/',
+  authenticate,
   testimonyCreationLimiter,
   validate(createTestimonySchema, 'body'),
   testimonyController.createTestimony.bind(testimonyController)
@@ -19,6 +21,7 @@ router.post(
 
 router.post(
   '/:id/validate',
+  authenticate,
   validationLimiter,
   validate(testimonyIdParamSchema, 'params'),
   validate(validateTestimonySchema, 'body'),
@@ -27,6 +30,7 @@ router.post(
 
 router.post(
   '/:id/reject',
+  authenticate,
   validationLimiter,
   validate(testimonyIdParamSchema, 'params'),
   validate(rejectTestimonySchema, 'body'),
