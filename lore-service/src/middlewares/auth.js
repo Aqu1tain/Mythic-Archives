@@ -1,6 +1,6 @@
 const axios = require('axios');
 
-const AUTH_SERVICE_URL = process.env.AUTH_SERVICE_URL || 'http://localhost:3000';
+const AUTH_SERVICE_URL = process.env.AUTH_SERVICE_URL || 'http://localhost:3001';
 
 const authenticate = async (req, res, next) => {
   const authHeader = req.headers.authorization;

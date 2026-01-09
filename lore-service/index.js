@@ -9,7 +9,7 @@ const errorHandler = require('./src/middlewares/errorHandler');
 const { helmetConfig, generalLimiter } = require('./src/middlewares/security');
 
 const app = express();
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 3002;
 
 app.use(helmetConfig);
 app.use(cors());
