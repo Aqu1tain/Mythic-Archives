@@ -25,7 +25,21 @@ export const updateReputation = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const { points } = req.body;
-    const user = await userService.updateReputation(parseInt(id), points);
+
+    const userId = parseInt(id);
+    if (isNaN(userId)) {
+      return res.status(400).json({ error: 'Invalid user ID' });
+    }
+
+    if (typeof points !== 'number' || !Number.isFinite(points)) {
+      return res.status(400).json({ error: 'Invalid points value' });
+    }
+
+    if (points < -10 || points > 10) {
+      return res.status(400).json({ error: 'Points must be between -10 and 10' });
+    }
+
+    const user = await userService.updateReputation(userId, points);
     res.json(user);
   } catch (error) {
     res.status(400).json({ error: (error as Error).message });
