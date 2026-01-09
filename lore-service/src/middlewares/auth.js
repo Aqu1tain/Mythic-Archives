@@ -19,8 +19,12 @@ const authenticate = async (req, res, next) => {
     req.user = response.data;
     next();
   } catch (error) {
-    const status = error.response?.status || 401;
-    const message = error.response?.data?.error || 'Invalid token';
+    if (!error.response) {
+      return res.status(503).json({ error: 'Authentication service unavailable' });
+    }
+
+    const status = error.response.status;
+    const message = error.response.data?.error || 'Invalid token';
     return res.status(status).json({ error: message });
   }
 };
