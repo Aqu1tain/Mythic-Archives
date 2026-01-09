@@ -41,6 +41,10 @@ you should get a HTTP 200 code with a message like this :
 }
 ```
 
-and done ! 
+and done !
 
-In each microservice, there will be a Doc, to explain which endpoints are accessible more precisely.
+## API Documentation
+
+See detailed API documentation for each service:
+- [Auth Service API](./auth-service/API.md)
+- [Lore Service API](./lore-service/API.md)
