@@ -15,11 +15,16 @@ const {
 } = require('../constants');
 
 const AUTH_SERVICE_URL = process.env.AUTH_SERVICE_URL || 'http://localhost:3001';
+const SERVICE_SECRET = process.env.SERVICE_SECRET || 'default-secret-change-in-production';
 
 class TestimonyService {
   async updateReputation(userId, points) {
     try {
-      await axios.post(`${AUTH_SERVICE_URL}/users/${userId}/reputation`, { points });
+      await axios.post(
+        `${AUTH_SERVICE_URL}/users/${userId}/reputation`,
+        { points },
+        { headers: { 'x-service-secret': SERVICE_SECRET } }
+      );
     } catch (error) {
       console.error(`Failed to update reputation for user ${userId}:`, error.message);
     }
