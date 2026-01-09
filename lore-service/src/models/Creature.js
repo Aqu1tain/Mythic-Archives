@@ -25,9 +25,19 @@ const creatureSchema = new mongoose.Schema({
   }
 }, {
   timestamps: false,
-  versionKey: false
+  versionKey: false,
+  toJSON: { virtuals: true },
+  toObject: { virtuals: true }
 });
 
+// Virtual field for legendScore
+// Formula: 1 + validatedTestimonies / 5
+creatureSchema.virtual('legendScore').get(function() {
+  const validatedCount = this.validatedTestimoniesCount || 0;
+  return 1 + (validatedCount / 5);
+});
+
+// Index for performance
 creatureSchema.index({ authorId: 1 });
 
 const Creature = mongoose.model('Creature', creatureSchema);

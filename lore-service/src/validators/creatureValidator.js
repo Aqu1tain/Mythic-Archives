@@ -48,7 +48,13 @@ const getCreaturesQuerySchema = Joi.object({
   limit: Joi.number().integer().min(1).max(100).optional(),
   skip: Joi.number().integer().min(0).optional(),
   authorId: Joi.string().optional(),
-  search: Joi.string().optional()
+  search: Joi.string().optional(),
+  sortBy: Joi.string().valid('createdAt', 'name', 'legendScore').optional().messages({
+    'any.only': 'sortBy must be one of: createdAt, name, legendScore'
+  }),
+  sortOrder: Joi.string().valid('asc', 'desc').optional().messages({
+    'any.only': 'sortOrder must be either asc or desc'
+  })
 });
 
 module.exports = {

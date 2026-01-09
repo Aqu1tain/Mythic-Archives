@@ -26,7 +26,8 @@ class CreatureService {
       throw new ValidationError(ERROR_MESSAGES.INVALID_CREATURE_ID);
     }
 
-    const creature = await creatureRepository.findById(id);
+    const objectId = new mongoose.Types.ObjectId(id);
+    const creature = await creatureRepository.findByIdWithLegendScore(objectId);
     if (!creature) {
       throw new NotFoundError(ERROR_MESSAGES.CREATURE_NOT_FOUND);
     }
@@ -35,7 +36,15 @@ class CreatureService {
   }
 
   async getAllCreatures(options = {}) {
-    const creatures = await creatureRepository.findAll({}, options);
+    const { sortBy, sortOrder } = options;
+
+    // Use aggregation method when sorting by legendScore or when sort is requested
+    const creatures = await creatureRepository.findAllWithLegendScore({}, {
+      ...options,
+      sortBy: sortBy || 'createdAt',
+      sortOrder: sortOrder || -1
+    });
+
     const total = await creatureRepository.count({});
 
     return {
@@ -47,7 +56,14 @@ class CreatureService {
   }
 
   async getCreaturesByAuthor(authorId, options = {}) {
-    const creatures = await creatureRepository.findByAuthor(authorId, options);
+    const creatures = await creatureRepository.findAllWithLegendScore(
+      { authorId },
+      {
+        ...options,
+        sortBy: options.sortBy || 'createdAt',
+        sortOrder: options.sortOrder || -1
+      }
+    );
     const total = await creatureRepository.count({ authorId });
 
     return {
@@ -59,14 +75,21 @@ class CreatureService {
   }
 
   async searchCreatures(searchTerm, options = {}) {
-    const creatures = await creatureRepository.search(searchTerm, options);
     const regex = new RegExp(searchTerm, 'i');
-    const total = await creatureRepository.count({
+    const filters = {
       $or: [
         { name: regex },
         { origin: regex }
       ]
+    };
+
+    const creatures = await creatureRepository.findAllWithLegendScore(filters, {
+      ...options,
+      sortBy: options.sortBy || 'createdAt',
+      sortOrder: options.sortOrder || -1
     });
+
+    const total = await creatureRepository.count(filters);
 
     return {
       creatures,
