@@ -80,7 +80,7 @@ class TestimonyService {
       throw new NotFoundError(ERROR_MESSAGES.TESTIMONY_NOT_FOUND);
     }
 
-    if (testimony.authorId === validatorId) {
+    if (String(testimony.authorId) === String(validatorId)) {
       throw new AuthorizationError(ERROR_MESSAGES.SELF_VALIDATION);
     }
 
@@ -107,7 +107,7 @@ class TestimonyService {
       throw new NotFoundError(ERROR_MESSAGES.TESTIMONY_NOT_FOUND);
     }
 
-    if (testimony.authorId === rejecterId) {
+    if (String(testimony.authorId) === String(rejecterId)) {
       throw new AuthorizationError(ERROR_MESSAGES.SELF_REJECTION);
     }
 
