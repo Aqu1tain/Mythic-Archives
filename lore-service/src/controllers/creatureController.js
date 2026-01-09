@@ -23,7 +23,8 @@ class CreatureController {
   async getCreatureById(req, res, next) {
     try {
       const { id } = req.params;
-      const creature = await creatureService.getCreatureById(id);
+      const includeScore = req.query.includeScore === 'true';
+      const creature = await creatureService.getCreatureById(id, includeScore);
 
       res.status(HTTP_STATUS.OK).json({ creature });
     } catch (error) {

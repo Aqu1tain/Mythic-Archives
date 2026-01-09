@@ -25,16 +25,7 @@ const creatureSchema = new mongoose.Schema({
   }
 }, {
   timestamps: false,
-  versionKey: false,
-  toJSON: { virtuals: true },
-  toObject: { virtuals: true }
-});
-
-// Virtual field for legendScore
-// Formula: 1 + validatedTestimonies / 5
-creatureSchema.virtual('legendScore').get(function() {
-  const validatedCount = this.validatedTestimoniesCount || 0;
-  return 1 + (validatedCount / 5);
+  versionKey: false
 });
 
 // Index for performance

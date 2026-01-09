@@ -36,9 +36,39 @@ class CreatureRepository extends BaseRepository {
   async findAllWithLegendScore(filters = {}, options = {}) {
     const { limit = 50, skip = 0, sortBy = 'createdAt', sortOrder = -1 } = options;
 
-    const pipeline = [
+    const pipeline = this._buildLegendScorePipeline(filters);
+
+    // Sort
+    pipeline.push({
+      $sort: sortBy === 'legendScore'
+        ? { legendScore: sortOrder }
+        : { [sortBy]: sortOrder }
+    });
+
+    // Pagination
+    pipeline.push({ $skip: skip });
+    pipeline.push({ $limit: limit });
+
+    return await this.model.aggregate(pipeline);
+  }
+
+  /**
+   * Find creature by ID with legendScore
+   */
+  async findByIdWithLegendScore(id) {
+    const pipeline = this._buildLegendScorePipeline({ _id: id });
+    const result = await this.model.aggregate(pipeline);
+    return result.length > 0 ? result[0] : null;
+  }
+
+  /**
+   * Build the aggregation pipeline for legendScore calculation
+   * @private
+   */
+  _buildLegendScorePipeline(matchFilters = {}) {
+    return [
       // Match filters
-      { $match: filters },
+      { $match: matchFilters },
 
       // Lookup validated testimonies count
       {
@@ -62,7 +92,7 @@ class CreatureRepository extends BaseRepository {
         }
       },
 
-      // Add validatedTestimoniesCount field
+      // Add validatedTestimoniesCount and legendScore fields
       {
         $addFields: {
           validatedTestimoniesCount: {
@@ -96,83 +126,8 @@ class CreatureRepository extends BaseRepository {
         $project: {
           validatedTestimonies: 0
         }
-      },
-
-      // Sort
-      {
-        $sort: sortBy === 'legendScore'
-          ? { legendScore: sortOrder }
-          : { [sortBy]: sortOrder }
-      },
-
-      // Pagination
-      { $skip: skip },
-      { $limit: limit }
-    ];
-
-    return await this.model.aggregate(pipeline);
-  }
-
-  /**
-   * Find creature by ID with legendScore
-   */
-  async findByIdWithLegendScore(id) {
-    const result = await this.model.aggregate([
-      { $match: { _id: id } },
-      {
-        $lookup: {
-          from: 'testimonies',
-          let: { creatureId: '$_id' },
-          pipeline: [
-            {
-              $match: {
-                $expr: {
-                  $and: [
-                    { $eq: ['$creatureId', '$$creatureId'] },
-                    { $eq: ['$status', TESTIMONY_STATUS.VALIDATED] }
-                  ]
-                }
-              }
-            },
-            { $count: 'count' }
-          ],
-          as: 'validatedTestimonies'
-        }
-      },
-      {
-        $addFields: {
-          validatedTestimoniesCount: {
-            $ifNull: [
-              { $arrayElemAt: ['$validatedTestimonies.count', 0] },
-              0
-            ]
-          },
-          legendScore: {
-            $add: [
-              1,
-              {
-                $divide: [
-                  {
-                    $ifNull: [
-                      { $arrayElemAt: ['$validatedTestimonies.count', 0] },
-                      0
-                    ]
-                  },
-                  5
-                ]
-              }
-            ]
-          }
-        }
-      },
-      {
-        $project: {
-          validatedTestimonies: 0
-        }
       }
-    ]);
-
-    return result.length > 0 ? result[0] : null;
+    ];
   }
 }
 

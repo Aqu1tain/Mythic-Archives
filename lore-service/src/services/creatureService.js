@@ -4,6 +4,30 @@ const { ValidationError, NotFoundError, ConflictError } = require('../utils/erro
 const { ERROR_MESSAGES } = require('../constants');
 
 class CreatureService {
+  /**
+   * Helper method to fetch creatures with optional legendScore
+   * @private
+   */
+  async _fetchCreatures(filters, options, repositoryMethod) {
+    const { sortBy } = options;
+
+    let creatures;
+    if (sortBy === 'legendScore') {
+      creatures = await creatureRepository.findAllWithLegendScore(filters, options);
+    } else {
+      creatures = await repositoryMethod(filters, options);
+    }
+
+    const total = await creatureRepository.count(filters);
+
+    return {
+      creatures,
+      total,
+      limit: options.limit || 50,
+      skip: options.skip || 0
+    };
+  }
+
   async createCreature(authorId, creatureData) {
     const { name, origin } = creatureData;
 
@@ -21,13 +45,19 @@ class CreatureService {
     return creature;
   }
 
-  async getCreatureById(id) {
+  async getCreatureById(id, includeScore = false) {
     if (!mongoose.Types.ObjectId.isValid(id)) {
       throw new ValidationError(ERROR_MESSAGES.INVALID_CREATURE_ID);
     }
 
-    const objectId = new mongoose.Types.ObjectId(id);
-    const creature = await creatureRepository.findByIdWithLegendScore(objectId);
+    let creature;
+    if (includeScore) {
+      const objectId = new mongoose.Types.ObjectId(id);
+      creature = await creatureRepository.findByIdWithLegendScore(objectId);
+    } else {
+      creature = await creatureRepository.findById(id);
+    }
+
     if (!creature) {
       throw new NotFoundError(ERROR_MESSAGES.CREATURE_NOT_FOUND);
     }
@@ -36,42 +66,19 @@ class CreatureService {
   }
 
   async getAllCreatures(options = {}) {
-    const { sortBy, sortOrder } = options;
-
-    // Use aggregation method when sorting by legendScore or when sort is requested
-    const creatures = await creatureRepository.findAllWithLegendScore({}, {
-      ...options,
-      sortBy: sortBy || 'createdAt',
-      sortOrder: sortOrder || -1
-    });
-
-    const total = await creatureRepository.count({});
-
-    return {
-      creatures,
-      total,
-      limit: options.limit || 50,
-      skip: options.skip || 0
-    };
+    return this._fetchCreatures(
+      {},
+      options,
+      (filters, opts) => creatureRepository.findAll(filters, opts)
+    );
   }
 
   async getCreaturesByAuthor(authorId, options = {}) {
-    const creatures = await creatureRepository.findAllWithLegendScore(
+    return this._fetchCreatures(
       { authorId },
-      {
-        ...options,
-        sortBy: options.sortBy || 'createdAt',
-        sortOrder: options.sortOrder || -1
-      }
+      options,
+      (filters, opts) => creatureRepository.findByAuthor(authorId, opts)
     );
-    const total = await creatureRepository.count({ authorId });
-
-    return {
-      creatures,
-      total,
-      limit: options.limit || 50,
-      skip: options.skip || 0
-    };
   }
 
   async searchCreatures(searchTerm, options = {}) {
@@ -83,20 +90,11 @@ class CreatureService {
       ]
     };
 
-    const creatures = await creatureRepository.findAllWithLegendScore(filters, {
-      ...options,
-      sortBy: options.sortBy || 'createdAt',
-      sortOrder: options.sortOrder || -1
-    });
-
-    const total = await creatureRepository.count(filters);
-
-    return {
-      creatures,
-      total,
-      limit: options.limit || 50,
-      skip: options.skip || 0
-    };
+    return this._fetchCreatures(
+      filters,
+      options,
+      () => creatureRepository.search(searchTerm, options)
+    );
   }
 
   async updateCreature(id, authorId, updateData) {
