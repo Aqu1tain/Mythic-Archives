@@ -86,7 +86,7 @@ class CreatureService {
       throw new NotFoundError(ERROR_MESSAGES.CREATURE_NOT_FOUND);
     }
 
-    if (creature.authorId !== authorId) {
+    if (String(creature.authorId) !== String(authorId)) {
       throw new ConflictError('You can only update your own creatures');
     }
 
@@ -111,7 +111,7 @@ class CreatureService {
       throw new NotFoundError(ERROR_MESSAGES.CREATURE_NOT_FOUND);
     }
 
-    if (creature.authorId !== authorId) {
+    if (String(creature.authorId) !== String(authorId)) {
       throw new ConflictError('You can only delete your own creatures');
     }
 
