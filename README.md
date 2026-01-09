@@ -6,42 +6,48 @@ Mythic archives is a school project, in the context of a Backend course
 
 ## Installation
 
-Warning : atm, we are still working on the code, so make sure to checkout on dev branch
 ```bash
 git clone https://github.com/Aqu1tain/Mythic-Archives
 cd Mythic-Archives
-# Temporary, whilst the project is not released
-git checkout dev
-git pull origin
 ```
 
-Then, launch each microservice separately
+Install dependencies for each service:
 ```bash
 cd auth-service
-npm run dev
+npm install
+cd ../lore-service
+npm install
+cd ..
 ```
 
-Same for lore-service
+Launch each microservice separately:
+```bash
+cd auth-service
+npm start
+```
+
+In another terminal:
 ```bash
 cd lore-service
-npm run dev
+npm start
 ```
 
-Check for the both of them on these endpoints (use postman or curl) :
-
-```http request
-GET "http:localhost:3001/health"
+Check services are running:
+```bash
+curl http://localhost:3001/health
+curl http://localhost:3002/health
 ```
-you should get a HTTP 200 code with a message like this :
 
+Expected responses:
 ```json
-{
-"status": "OK",
-"service": "auth-service"
-}
+{"status":"OK","service":"auth-service"}
+{"status":"OK","service":"lore-service"}
 ```
 
-and done !
+## Services
+
+- **auth-service**: http://localhost:3001
+- **lore-service**: http://localhost:3002
 
 ## API Documentation
 
