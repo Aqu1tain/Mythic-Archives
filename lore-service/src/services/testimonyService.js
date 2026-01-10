@@ -12,8 +12,10 @@ const {
   ERROR_MESSAGES,
   TESTIMONY_STATUS,
   TIME_CONSTRAINTS,
-  PAGINATION
+  PAGINATION,
+  REPUTATION
 } = require('../constants');
+const { isOwner } = require('../utils/helpers');
 
 const AUTH_SERVICE_URL = process.env.AUTH_SERVICE_URL || 'http://localhost:3001';
 const SERVICE_SECRET = process.env.SERVICE_SECRET || 'default-secret-change-in-production';
@@ -101,7 +103,7 @@ class TestimonyService {
       throw new NotFoundError(ERROR_MESSAGES.TESTIMONY_NOT_FOUND);
     }
 
-    if (String(testimony.authorId) === String(validatorId)) {
+    if (isOwner(testimony.authorId, validatorId)) {
       throw new AuthorizationError(ERROR_MESSAGES.SELF_VALIDATION);
     }
 
@@ -115,9 +117,9 @@ class TestimonyService {
       validatedAt: new Date()
     });
 
-    const basePoints = 3;
-    const expertBonus = validatorRole === 'EXPERT' ? 1 : 0;
-    await this.updateReputation(testimony.authorId, basePoints + expertBonus);
+    const points = REPUTATION.BASE_VALIDATION_POINTS +
+      (validatorRole === 'EXPERT' ? REPUTATION.EXPERT_BONUS : 0);
+    await this.updateReputation(testimony.authorId, points);
 
     return updatedTestimony;
   }
@@ -132,7 +134,7 @@ class TestimonyService {
       throw new NotFoundError(ERROR_MESSAGES.TESTIMONY_NOT_FOUND);
     }
 
-    if (String(testimony.authorId) === String(rejecterId)) {
+    if (isOwner(testimony.authorId, rejecterId)) {
       throw new AuthorizationError(ERROR_MESSAGES.SELF_REJECTION);
     }
 
@@ -146,7 +148,7 @@ class TestimonyService {
       validatedAt: new Date()
     });
 
-    await this.updateReputation(testimony.authorId, -1);
+    await this.updateReputation(testimony.authorId, REPUTATION.REJECTION_PENALTY);
 
     return updatedTestimony;
   }
