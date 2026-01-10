@@ -23,7 +23,8 @@ class CreatureController {
   async getCreatureById(req, res, next) {
     try {
       const { id } = req.params;
-      const creature = await creatureService.getCreatureById(id);
+      const includeScore = req.query.includeScore === 'true';
+      const creature = await creatureService.getCreatureById(id, includeScore);
 
       res.status(HTTP_STATUS.OK).json({ creature });
     } catch (error) {
@@ -33,11 +34,13 @@ class CreatureController {
 
   async getAllCreatures(req, res, next) {
     try {
-      const { limit, skip, authorId, search } = req.query;
+      const { limit, skip, authorId, search, sortBy, sortOrder } = req.query;
 
       const options = {
         limit: limit ? parseInt(limit) : 50,
-        skip: skip ? parseInt(skip) : 0
+        skip: skip ? parseInt(skip) : 0,
+        sortBy: sortBy || 'createdAt',
+        sortOrder: sortOrder === 'asc' ? 1 : -1
       };
 
       let result;

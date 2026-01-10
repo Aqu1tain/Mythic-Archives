@@ -69,17 +69,18 @@ class TestimonyController {
     try {
       const { id } = req.params;
       const validatorId = req.user?.id || req.body.validatorId;
+      const validatorRole = req.user?.role;
 
-      if (!validatorId) {
+      if (!validatorId || !validatorRole) {
         return res.status(401).json({
           error: {
-            message: 'Unauthorized: validatorId is required',
+            message: 'Unauthorized: authentication required',
             status: 401
           }
         });
       }
 
-      const testimony = await testimonyService.validateTestimony(id, validatorId);
+      const testimony = await testimonyService.validateTestimony(id, validatorId, validatorRole);
 
       res.status(200).json({
         message: 'Testimony validated successfully',

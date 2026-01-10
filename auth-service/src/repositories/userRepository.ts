@@ -35,3 +35,21 @@ export const updateRole = async (id: number, role: 'USER' | 'EXPERT' | 'ADMIN') 
     data: { role },
   });
 };
+
+export const updateReputation = async (id: number, points: number) => {
+  const user = await prisma.user.update({
+    where: { id },
+    data: { reputation: { increment: points } },
+  });
+
+  if (!user) return null;
+
+  if (user.reputation >= 10 && user.role === 'USER') {
+    return prisma.user.update({
+      where: { id },
+      data: { role: 'EXPERT' },
+    });
+  }
+
+  return user;
+};
