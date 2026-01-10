@@ -1,4 +1,5 @@
 import prisma from '../utils/db.js';
+import { REPUTATION } from '../constants/index.js';
 
 export const findByEmail = async (email: string) => {
   return prisma.user.findUnique({ where: { email } });
@@ -44,7 +45,7 @@ export const updateReputation = async (id: number, points: number) => {
 
   if (!user) return null;
 
-  if (user.reputation >= 10 && user.role === 'USER') {
+  if (user.reputation >= REPUTATION.EXPERT_THRESHOLD && user.role === 'USER') {
     return prisma.user.update({
       where: { id },
       data: { role: 'EXPERT' },

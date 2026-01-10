@@ -2,6 +2,7 @@ const creatureRepository = require('../repositories/creatureRepository');
 const mongoose = require('mongoose');
 const { ValidationError, NotFoundError, ConflictError } = require('../utils/errors');
 const { ERROR_MESSAGES } = require('../constants');
+const { isOwner } = require('../utils/helpers');
 
 class CreatureService {
   /**
@@ -114,7 +115,7 @@ class CreatureService {
       throw new NotFoundError(ERROR_MESSAGES.CREATURE_NOT_FOUND);
     }
 
-    if (String(creature.authorId) !== String(authorId)) {
+    if (!isOwner(creature.authorId, authorId)) {
       throw new ConflictError('You can only update your own creatures');
     }
 
@@ -139,7 +140,7 @@ class CreatureService {
       throw new NotFoundError(ERROR_MESSAGES.CREATURE_NOT_FOUND);
     }
 
-    if (String(creature.authorId) !== String(authorId)) {
+    if (!isOwner(creature.authorId, authorId)) {
       throw new ConflictError('You can only delete your own creatures');
     }
 
