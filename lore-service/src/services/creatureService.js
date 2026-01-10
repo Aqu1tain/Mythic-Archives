@@ -9,13 +9,19 @@ class CreatureService {
    * @private
    */
   async _fetchCreatures(filters, options, repositoryMethod) {
-    const { sortBy } = options;
+    const { sortBy, sortOrder } = options;
 
     let creatures;
     if (sortBy === 'legendScore') {
       creatures = await creatureRepository.findAllWithLegendScore(filters, options);
     } else {
-      creatures = await repositoryMethod(filters, options);
+      const modifiedOptions = { ...options };
+      if (sortBy) {
+        modifiedOptions.sort = {
+          [sortBy]: sortOrder === 'asc' ? 1 : -1
+        };
+      }
+      creatures = await repositoryMethod(filters, modifiedOptions);
     }
 
     const total = await creatureRepository.count(filters);
