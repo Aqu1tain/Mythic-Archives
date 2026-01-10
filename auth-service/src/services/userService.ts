@@ -17,3 +17,11 @@ export const updateUserRole = async (userId: number, newRole: 'USER' | 'EXPERT' 
 
   return userRepository.updateRole(userId, newRole);
 };
+
+export const updateReputation = async (userId: number, points: number) => {
+  const user = await userRepository.updateReputation(userId, points);
+  if (!user) {
+    throw new Error('User not found');
+  }
+  return user;
+};
