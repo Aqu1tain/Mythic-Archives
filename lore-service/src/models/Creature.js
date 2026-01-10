@@ -28,6 +28,7 @@ const creatureSchema = new mongoose.Schema({
   versionKey: false
 });
 
+// Index for performance
 creatureSchema.index({ authorId: 1 });
 
 const Creature = mongoose.model('Creature', creatureSchema);
