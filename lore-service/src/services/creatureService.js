@@ -82,7 +82,8 @@ class CreatureService {
   }
 
   async searchCreatures(searchTerm, options = {}) {
-    const regex = new RegExp(searchTerm, 'i');
+    const escapedTerm = searchTerm.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const regex = new RegExp(escapedTerm, 'i');
     const filters = {
       $or: [
         { name: regex },
@@ -93,7 +94,7 @@ class CreatureService {
     return this._fetchCreatures(
       filters,
       options,
-      () => creatureRepository.search(searchTerm, options)
+      () => creatureRepository.search(escapedTerm, options)
     );
   }
 

@@ -1,4 +1,5 @@
 const testimonyRepository = require('../repositories/testimonyRepository');
+const creatureRepository = require('../repositories/creatureRepository');
 const mongoose = require('mongoose');
 const axios = require('axios');
 const {
@@ -34,6 +35,11 @@ class TestimonyService {
 
     if (!mongoose.Types.ObjectId.isValid(creatureId)) {
       throw new ValidationError(ERROR_MESSAGES.INVALID_CREATURE_ID);
+    }
+
+    const creature = await creatureRepository.findById(creatureId);
+    if (!creature) {
+      throw new NotFoundError(ERROR_MESSAGES.CREATURE_NOT_FOUND);
     }
 
     const recentTestimony = await testimonyRepository.findRecentByAuthorAndCreature(
