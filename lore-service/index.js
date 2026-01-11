@@ -5,6 +5,8 @@ const connectDB = require('./src/config/database');
 const healthRoutes = require('./src/routes/healthRoutes');
 const creatureRoutes = require('./src/routes/creatureRoutes');
 const testimonyRoutes = require('./src/routes/testimonyRoutes');
+const adminRoutes = require('./src/routes/adminRoutes');
+const expertRoutes = require('./src/routes/expertRoutes');
 const errorHandler = require('./src/middlewares/errorHandler');
 const { helmetConfig, generalLimiter } = require('./src/middlewares/security');
 
@@ -23,6 +25,8 @@ app.use(generalLimiter);
 app.use('/health', healthRoutes);
 app.use('/creatures', creatureRoutes);
 app.use('/testimonies', testimonyRoutes);
+app.use('/admin', adminRoutes);
+app.use('/expert', expertRoutes);
 
 app.use((_req, res) => {
   res.status(404).json({
