@@ -1,5 +1,6 @@
 const BaseRepository = require('./baseRepository');
 const ModerationHistory = require('../models/ModerationHistory');
+const mongoose = require('mongoose');
 
 class ModerationHistoryRepository extends BaseRepository {
   constructor() {
@@ -22,6 +23,7 @@ class ModerationHistoryRepository extends BaseRepository {
   }
 
   async findByCreatureId(creatureId, options = {}) {
+    const objectId = new mongoose.Types.ObjectId(creatureId);
     const histories = await ModerationHistory.aggregate([
       {
         $lookup: {
@@ -32,7 +34,7 @@ class ModerationHistoryRepository extends BaseRepository {
         }
       },
       { $unwind: '$testimony' },
-      { $match: { 'testimony.creatureId': creatureId } },
+      { $match: { 'testimony.creatureId': objectId } },
       { $sort: { createdAt: -1 } },
       { $skip: options.skip || 0 },
       { $limit: options.limit || 50 }
