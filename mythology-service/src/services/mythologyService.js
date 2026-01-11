@@ -5,11 +5,14 @@ const LORE_SERVICE_URL = process.env.LORE_SERVICE_URL || 'http://localhost:3002'
 class MythologyService {
   async getStats() {
     const { data } = await axios.get(`${LORE_SERVICE_URL}/creatures`, {
-      params: { sortBy: 'legendScore' }
+      params: {
+        sortBy: 'legendScore',
+        limit: 1000
+      }
     });
 
     const creatures = data.creatures || [];
-    const total = creatures.length;
+    const total = data.pagination?.total || creatures.length;
 
     if (total === 0) {
       return {
