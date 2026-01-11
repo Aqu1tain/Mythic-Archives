@@ -152,6 +152,20 @@ class TestimonyService {
 
     return updatedTestimony;
   }
+
+  async deleteTestimony(testimonyId) {
+    if (!mongoose.Types.ObjectId.isValid(testimonyId)) {
+      throw new ValidationError(ERROR_MESSAGES.INVALID_TESTIMONY_ID);
+    }
+
+    const testimony = await testimonyRepository.findById(testimonyId);
+    if (!testimony) {
+      throw new NotFoundError(ERROR_MESSAGES.TESTIMONY_NOT_FOUND);
+    }
+
+    await testimonyRepository.softDelete(testimonyId);
+    return { message: 'Testimony deleted successfully' };
+  }
 }
 
 module.exports = new TestimonyService();
