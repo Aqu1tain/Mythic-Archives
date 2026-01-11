@@ -1,0 +1,75 @@
+services:
+  mongodb:
+    image: mongo:7
+    container_name: mythic-mongodb
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - mythic-network
+
+  auth-service:
+    build:
+      context: ./auth-service
+      dockerfile: Dockerfile
+    container_name: mythic-auth-service
+    restart: unless-stopped
+    ports:
+      - "3001:3001"
+    environment:
+      - PORT=3001
+      - DATABASE_URL=file:./dev.db
+      - JWT_SECRET=${JWT_SECRET:-default-jwt-secret-change-in-production}
+      - JWT_EXPIRES_IN=7d
+      - SERVICE_SECRET=${SERVICE_SECRET:-shared-secret-for-inter-service-auth}
+    volumes:
+      - ./auth-service/prisma:/app/prisma
+    networks:
+      - mythic-network
+    depends_on:
+      - mongodb
+
+  lore-service:
+    build:
+      context: ./lore-service
+      dockerfile: Dockerfile
+    container_name: mythic-lore-service
+    restart: unless-stopped
+    ports:
+      - "3002:3002"
+    environment:
+      - PORT=3002
+      - DATABASE_URL=mongodb://mongodb:27017/mythic-lore
+      - AUTH_SERVICE_URL=http://auth-service:3001
+      - SERVICE_SECRET=${SERVICE_SECRET:-shared-secret-for-inter-service-auth}
+    networks:
+      - mythic-network
+    depends_on:
+      - mongodb
+      - auth-service
+
+  mythology-service:
+    build:
+      context: ./mythology-service
+      dockerfile: Dockerfile
+    container_name: mythic-mythology-service
+    restart: unless-stopped
+    ports:
+      - "3003:3003"
+    environment:
+      - PORT=3003
+      - LORE_SERVICE_URL=http://lore-service:3002
+    networks:
+      - mythic-network
+    depends_on:
+      - lore-service
+
+networks:
+  mythic-network:
+    driver: bridge
+
+volumes:
+  mongodb_data:
+    driver: local
