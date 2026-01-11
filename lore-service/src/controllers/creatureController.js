@@ -1,10 +1,11 @@
 const creatureService = require('../services/creatureService');
 const { HTTP_STATUS } = require('../constants');
+const { extractUserId, parsePaginationParams } = require('../utils/helpers');
 
 class CreatureController {
   async createCreature(req, res, next) {
     try {
-      const authorId = req.user?.id || req.body.authorId;
+      const authorId = extractUserId(req);
 
       const creature = await creatureService.createCreature(authorId, {
         name: req.body.name,
@@ -37,8 +38,7 @@ class CreatureController {
       const { limit, skip, authorId, search, sortBy, sortOrder } = req.query;
 
       const options = {
-        limit: limit ? parseInt(limit) : 50,
-        skip: skip ? parseInt(skip) : 0,
+        ...parsePaginationParams(limit, skip),
         sortBy: sortBy || 'createdAt',
         sortOrder: sortOrder === 'asc' ? 1 : -1
       };
@@ -69,7 +69,7 @@ class CreatureController {
   async updateCreature(req, res, next) {
     try {
       const { id } = req.params;
-      const authorId = req.user?.id || req.body.authorId;
+      const authorId = extractUserId(req);
       const { name, origin } = req.body;
 
       const updatedCreature = await creatureService.updateCreature(id, authorId, {
@@ -89,7 +89,7 @@ class CreatureController {
   async deleteCreature(req, res, next) {
     try {
       const { id } = req.params;
-      const authorId = req.user?.id || req.body.authorId;
+      const authorId = extractUserId(req);
 
       const result = await creatureService.deleteCreature(id, authorId);
 

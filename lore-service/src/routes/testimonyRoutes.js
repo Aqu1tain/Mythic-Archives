@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const testimonyController = require('../controllers/testimonyController');
 const { authenticate } = require('../middlewares/auth');
+const { authorize } = require('../middlewares/authorize');
 const validate = require('../middlewares/validate');
 const {
   createTestimonySchema,
@@ -35,6 +36,14 @@ router.post(
   validate(testimonyIdParamSchema, 'params'),
   validate(rejectTestimonySchema, 'body'),
   testimonyController.rejectTestimony.bind(testimonyController)
+);
+
+router.delete(
+  '/:id',
+  authenticate,
+  authorize('ADMIN'),
+  validate(testimonyIdParamSchema, 'params'),
+  testimonyController.deleteTestimony.bind(testimonyController)
 );
 
 module.exports = router;

@@ -2,14 +2,16 @@ const axios = require('axios');
 
 const AUTH_SERVICE_URL = process.env.AUTH_SERVICE_URL || 'http://localhost:3001';
 
+const BEARER_PREFIX = 'Bearer ';
+
 const authenticate = async (req, res, next) => {
   const authHeader = req.headers.authorization;
 
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+  if (!authHeader || !authHeader.startsWith(BEARER_PREFIX)) {
     return res.status(401).json({ error: 'Authentication required' });
   }
 
-  const token = authHeader.substring(7);
+  const token = authHeader.slice(BEARER_PREFIX.length);
 
   try {
     const response = await axios.get(`${AUTH_SERVICE_URL}/auth/me`, {
