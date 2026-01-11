@@ -5,6 +5,12 @@
 - Docker
 - Docker Compose
 
+## Technical Details
+
+- All services use Node.js 20 Alpine
+- MongoDB 7
+- Services communicate via internal Docker network
+
 ## Quick Start
 
 ```bash

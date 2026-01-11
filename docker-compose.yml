@@ -41,7 +41,7 @@ services:
       - "3002:3002"
     environment:
       - PORT=3002
-      - MONGODB_URI=mongodb://mongodb:27017/mythic-lore
+      - DATABASE_URL=mongodb://mongodb:27017/mythic-lore
       - AUTH_SERVICE_URL=http://auth-service:3001
       - SERVICE_SECRET=${SERVICE_SECRET:-shared-secret-for-inter-service-auth}
     networks:
