@@ -4,7 +4,9 @@ const LORE_SERVICE_URL = process.env.LORE_SERVICE_URL || 'http://localhost:3002'
 
 class MythologyService {
   async getStats() {
-    const { data } = await axios.get(`${LORE_SERVICE_URL}/creatures`);
+    const { data } = await axios.get(`${LORE_SERVICE_URL}/creatures`, {
+      params: { sortBy: 'legendScore' }
+    });
 
     const creatures = data.creatures || [];
     const total = creatures.length;
@@ -21,7 +23,7 @@ class MythologyService {
     }
 
     const totalTestimonies = creatures.reduce((sum, creature) => {
-      return sum + (creature.validatedTestimonies || 0);
+      return sum + (creature.validatedTestimoniesCount || 0);
     }, 0);
 
     const averageTestimonies = total > 0 ? totalTestimonies / total : 0;
