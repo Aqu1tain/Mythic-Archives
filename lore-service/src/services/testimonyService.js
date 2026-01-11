@@ -194,6 +194,27 @@ class TestimonyService {
   async getModerationHistoryByCreature(creatureId, options = {}) {
     return await moderationHistoryRepository.findByCreatureId(creatureId, options);
   }
+
+  async restoreTestimony(testimonyId, moderatorId) {
+    if (!mongoose.Types.ObjectId.isValid(testimonyId)) {
+      throw new ValidationError(ERROR_MESSAGES.INVALID_TESTIMONY_ID);
+    }
+
+    const testimony = await testimonyRepository.findDeleted(testimonyId);
+    if (!testimony) {
+      throw new NotFoundError('Testimony not found or not deleted');
+    }
+
+    await testimonyRepository.update(testimonyId, { deletedAt: null });
+
+    await moderationHistoryRepository.create({
+      testimonyId,
+      action: 'RESTORE',
+      moderatorId
+    });
+
+    return { message: 'Testimony restored successfully' };
+  }
 }
 
 module.exports = new TestimonyService();

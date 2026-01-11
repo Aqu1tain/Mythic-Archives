@@ -159,6 +159,17 @@ class TestimonyController {
       next(error);
     }
   }
+
+  async restoreTestimony(req, res, next) {
+    try {
+      const { id } = req.params;
+      const moderatorId = extractUserId(req);
+      const result = await testimonyService.restoreTestimony(id, moderatorId);
+      res.status(HTTP_STATUS.OK).json(result);
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 
 module.exports = new TestimonyController();

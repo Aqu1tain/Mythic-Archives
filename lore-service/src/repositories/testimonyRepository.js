@@ -61,6 +61,10 @@ class TestimonyRepository extends BaseRepository {
   async softDelete(id) {
     return await super.update(id, { deletedAt: new Date() });
   }
+
+  async findDeleted(id) {
+    return await super.findOne({ _id: id, deletedAt: { $ne: null } }, this.populate);
+  }
 }
 
 module.exports = new TestimonyRepository();

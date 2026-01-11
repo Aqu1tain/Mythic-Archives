@@ -5,7 +5,7 @@ const { authenticate } = require('../middlewares/auth');
 const { authorize } = require('../middlewares/authorize');
 const validate = require('../middlewares/validate');
 const { userIdParamSchema } = require('../validators/userValidator');
-const { creatureIdParamSchema } = require('../validators/creatureValidator');
+const { testimonyIdParamSchema } = require('../validators/testimonyValidator');
 
 router.get(
   '/users/:id/history',
@@ -13,6 +13,14 @@ router.get(
   authorize('ADMIN'),
   validate(userIdParamSchema, 'params'),
   testimonyController.getUserModerationHistory.bind(testimonyController)
+);
+
+router.post(
+  '/testimonies/:id/restore',
+  authenticate,
+  authorize('ADMIN'),
+  validate(testimonyIdParamSchema, 'params'),
+  testimonyController.restoreTestimony.bind(testimonyController)
 );
 
 module.exports = router;
