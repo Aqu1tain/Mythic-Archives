@@ -114,6 +114,16 @@ class TestimonyController {
       next(error);
     }
   }
+
+  async deleteTestimony(req, res, next) {
+    try {
+      const { id } = req.params;
+      const result = await testimonyService.deleteTestimony(id);
+      res.status(HTTP_STATUS.OK).json(result);
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 
 module.exports = new TestimonyController();
