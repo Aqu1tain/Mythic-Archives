@@ -6,6 +6,22 @@ Mythic archives is a school project, in the context of a Backend course
 
 ## Installation
 
+### Docker (Recommended)
+
+```bash
+git clone https://github.com/Aqu1tain/Mythic-Archives
+cd Mythic-Archives
+docker-compose up --build
+```
+
+Services will be available at:
+- **auth-service**: http://localhost:3001
+- **lore-service**: http://localhost:3002
+- **mythology-service**: http://localhost:3003
+- **mongodb**: localhost:27017
+
+### Manual Setup
+
 ```bash
 git clone https://github.com/Aqu1tain/Mythic-Archives
 cd Mythic-Archives
@@ -16,6 +32,8 @@ Install dependencies for each service:
 cd auth-service
 npm install
 cd ../lore-service
+npm install
+cd ../mythology-service
 npm install
 cd ..
 ```
@@ -32,22 +50,24 @@ cd lore-service
 npm start
 ```
 
+In another terminal:
+```bash
+cd mythology-service
+npm start
+```
+
 Check services are running:
 ```bash
 curl http://localhost:3001/health
 curl http://localhost:3002/health
-```
-
-Expected responses:
-```json
-{"status":"OK","service":"auth-service"}
-{"status":"OK","service":"lore-service"}
+curl http://localhost:3003/health
 ```
 
 ## Services
 
 - **auth-service**: http://localhost:3001
 - **lore-service**: http://localhost:3002
+- **mythology-service**: http://localhost:3003
 
 ## API Documentation
 
