@@ -118,8 +118,43 @@ class TestimonyController {
   async deleteTestimony(req, res, next) {
     try {
       const { id } = req.params;
-      const result = await testimonyService.deleteTestimony(id);
+      const moderatorId = extractUserId(req);
+      const result = await testimonyService.deleteTestimony(id, moderatorId);
       res.status(HTTP_STATUS.OK).json(result);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async getUserModerationHistory(req, res, next) {
+    try {
+      const { id: userId } = req.params;
+      const { limit, skip } = req.query;
+      const options = parsePaginationParams(limit, skip);
+
+      const histories = await testimonyService.getModerationHistoryByUser(userId, options);
+
+      res.status(HTTP_STATUS.OK).json({
+        histories,
+        total: histories.length
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async getCreatureModerationHistory(req, res, next) {
+    try {
+      const { id: creatureId } = req.params;
+      const { limit, skip } = req.query;
+      const options = parsePaginationParams(limit, skip);
+
+      const histories = await testimonyService.getModerationHistoryByCreature(creatureId, options);
+
+      res.status(HTTP_STATUS.OK).json({
+        histories,
+        total: histories.length
+      });
     } catch (error) {
       next(error);
     }

@@ -1,5 +1,6 @@
 const testimonyRepository = require('../repositories/testimonyRepository');
 const creatureRepository = require('../repositories/creatureRepository');
+const moderationHistoryRepository = require('../repositories/moderationHistoryRepository');
 const mongoose = require('mongoose');
 const axios = require('axios');
 const {
@@ -121,6 +122,12 @@ class TestimonyService {
       (validatorRole === 'EXPERT' ? REPUTATION.EXPERT_BONUS : 0);
     await this.updateReputation(testimony.authorId, points);
 
+    await moderationHistoryRepository.create({
+      testimonyId,
+      action: 'VALIDATE',
+      moderatorId: validatorId
+    });
+
     return updatedTestimony;
   }
 
@@ -150,10 +157,16 @@ class TestimonyService {
 
     await this.updateReputation(testimony.authorId, REPUTATION.REJECTION_PENALTY);
 
+    await moderationHistoryRepository.create({
+      testimonyId,
+      action: 'REJECT',
+      moderatorId: rejecterId
+    });
+
     return updatedTestimony;
   }
 
-  async deleteTestimony(testimonyId) {
+  async deleteTestimony(testimonyId, moderatorId) {
     if (!mongoose.Types.ObjectId.isValid(testimonyId)) {
       throw new ValidationError(ERROR_MESSAGES.INVALID_TESTIMONY_ID);
     }
@@ -164,7 +177,22 @@ class TestimonyService {
     }
 
     await testimonyRepository.softDelete(testimonyId);
+
+    await moderationHistoryRepository.create({
+      testimonyId,
+      action: 'DELETE',
+      moderatorId
+    });
+
     return { message: 'Testimony deleted successfully' };
+  }
+
+  async getModerationHistoryByUser(moderatorId, options = {}) {
+    return await moderationHistoryRepository.findByModeratorId(moderatorId, options);
+  }
+
+  async getModerationHistoryByCreature(creatureId, options = {}) {
+    return await moderationHistoryRepository.findByCreatureId(creatureId, options);
   }
 }
 
